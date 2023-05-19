@@ -32,6 +32,12 @@ async function run() {
       const result = await toyCollection.insertOne(toy);
       res.send(result);
   });
+  // get all toy
+  app.get('/toys', async(req,res) =>{
+    const cursor = toyCollection.find();
+    const result = await cursor.toArray();
+    res.send(result);
+})
   // get toy by email
   app.get('/toys',async(req,res)=>{
     let query = {};
