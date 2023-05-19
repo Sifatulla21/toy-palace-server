@@ -33,15 +33,15 @@ async function run() {
       res.send(result);
   });
   // get all toy
-  app.get('/toys', async(req,res) =>{
+  app.get('/alltoys', async(req,res) =>{
     const cursor = toyCollection.find();
     const result = await cursor.toArray();
     res.send(result);
-})
+});
   // get toy by email
   app.get('/toys',async(req,res)=>{
     let query = {};
-    if(req.query?.email){
+    if(req.query.email){
       query = {email: req.query.email}
     }
     const result = await toyCollection.find(query).toArray();
