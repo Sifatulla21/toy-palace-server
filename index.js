@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config()
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -25,10 +25,28 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     const toyCollection = client.db('toyPlace').collection('toys');
+
+    // post single toy
     app.post('/toys', async(req,res) => {
       const toy = req.body;
       const result = await toyCollection.insertOne(toy);
       res.send(result);
+  });
+  // get toy by email
+  app.get('/toys',async(req,res)=>{
+    let query = {};
+    if(req.query?.email){
+      query = {email: req.query.email}
+    }
+    const result = await toyCollection.find(query).toArray();
+    res.send(result);
+  })
+  // delete toy
+  app.delete('/toys/:id',async(req,res) =>{
+    const id = req.params.id;
+    const query = {_id: new ObjectId(id)};
+    const result = await toyCollection.deleteOne(query);
+    res.send(result);
   });
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
