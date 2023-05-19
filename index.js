@@ -34,8 +34,7 @@ async function run() {
   });
   // get all toy
   app.get('/alltoys', async(req,res) =>{
-    const cursor = toyCollection.find();
-    const result = await cursor.toArray();
+    const result = await toyCollection.find().limit(20).toArray();
     res.send(result);
 });
   // get toy by email
@@ -46,7 +45,17 @@ async function run() {
     }
     const result = await toyCollection.find(query).toArray();
     res.send(result);
-  })
+  });
+  // get email by id
+  app.get('/alltoys/:id', async(req,res) =>{
+    const id = req.params.id;
+    const query = {_id: new ObjectId(id)};
+    const options = {
+        projection: {sellerName:1, email:1, rating:1, quantity:1, toy:1, price:1, photo: 1, details:1},
+    };
+    const result = await toyCollection.findOne(query, options);
+    res.send(result);
+});
   // delete toy
   app.delete('/toys/:id',async(req,res) =>{
     const id = req.params.id;
