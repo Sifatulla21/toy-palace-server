@@ -76,9 +76,25 @@ async function run() {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const options = {
-        projection: { sellerName: 1, email: 1, rating: 1, quantity: 1, toy: 1, price: 1, photo: 1, details: 1 },
+        projection: { sellerName: 1, email: 1, rating: 1, quantity: 1, toy: 1, price: 1, photo: 1, details: 1, category: 1 },
       };
       const result = await toyCollection.findOne(query, options);
+      res.send(result);
+    });
+    // update
+    app.put('/updatetoy/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedToy= req.body;
+      const toy = {
+        $set: {
+          price : updatedToy.price,
+          quantity : updatedToy.quantity,
+          details : updatedToy.details
+        },
+      };
+      const result = await toyCollection.updateOne(filter, toy);
       res.send(result);
     });
     // delete toy
