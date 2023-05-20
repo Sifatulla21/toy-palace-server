@@ -25,18 +25,22 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     const toyCollection = client.db('toyPlace').collection('toys');
-
+    // search
+    const indexKey = { toy:1 };
+    const indexOption = { name: "toySearch" }; 
+    const result = await toyCollection.createIndex(indexKey, indexOption);
+    
+    // get all toy
+    app.get('/alltoys', async(req,res) =>{
+      const result = await toyCollection.find().limit(20).toArray();
+      res.send(result);
+  });
     // post single toy
     app.post('/toys', async(req,res) => {
       const toy = req.body;
       const result = await toyCollection.insertOne(toy);
       res.send(result);
   });
-  // get all toy
-  app.get('/alltoys', async(req,res) =>{
-    const result = await toyCollection.find().limit(20).toArray();
-    res.send(result);
-});
 // get filtered data
 app.get('/alltoy', async(req, res) => {
   let query = {};
@@ -47,9 +51,19 @@ app.get('/alltoy', async(req, res) => {
   res.send(result);
   });
 
-
+  app.get("/alltoystext/:text", async (req, res) => {
+    const text = req.params.text;
+    const result = await toyCollection
+      .find({
+        $or: [
+          { toy: { $regex: text, $options: "i" } }
+        ],
+      })
+      .toArray();
+    res.send(result);
+  });
   // get toy by email
-  app.get('/toys',async(req,res)=>{
+  app.get('/mytoys',async(req,res)=>{
     let query = {};
     if(req.query.email){
       query = {email: req.query.email}
