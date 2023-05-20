@@ -37,6 +37,17 @@ async function run() {
     const result = await toyCollection.find().limit(20).toArray();
     res.send(result);
 });
+// get filtered data
+app.get('/alltoy', async(req, res) => {
+  let query = {};
+  if(req.query.category){
+    query = {category: req.query.category}
+  }
+  const result = await toyCollection.find(query).toArray();
+  res.send(result);
+  });
+
+
   // get toy by email
   app.get('/toys',async(req,res)=>{
     let query = {};
@@ -46,7 +57,7 @@ async function run() {
     const result = await toyCollection.find(query).toArray();
     res.send(result);
   });
-  // get email by id
+  // get by id
   app.get('/alltoys/:id', async(req,res) =>{
     const id = req.params.id;
     const query = {_id: new ObjectId(id)};
