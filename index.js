@@ -51,6 +51,7 @@ async function run() {
       res.send(result);
     });
 
+    // search
     app.get("/alltoystext/:text", async (req, res) => {
       const text = req.params.text;
       const result = await toyCollection
@@ -65,10 +66,11 @@ async function run() {
     // get toy by email
     app.get('/mytoys', async (req, res) => {
       let query = {};
+      const sortPrice = req.query.sort === 'desc' ? -1 : 1;
       if (req.query.email) {
         query = { email: req.query.email }
       }
-      const result = await (await toyCollection.find(query).toArray()).reverse();
+      const result = await (await toyCollection.find(query).sort({ price : sortPrice }).toArray()).reverse();
       res.send(result);
     });
     // get by id
